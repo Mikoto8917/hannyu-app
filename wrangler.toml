@@ -1,6 +1,7 @@
 # Cloudflare Worker の設定。秘密キー（NOTION_TOKEN）はここに書かず、
 # Cloudflare の画面の「Settings → Variables and Secrets」で Secret として登録する。
-name = "hannyu-app"
+# 公開アドレスの一部になる名前。推測されにくいよう、ランダムな文字を付けている
+name = "hannyu-k7q2m9x4"
 main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
