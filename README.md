@@ -4,7 +4,11 @@
 
 ## 構成
 
-- `public/`：画面（スマホで開くページ）。`app.js` が登録画面、`outbox.js` が送信待ちの保存と再送
+- `public/`：画面（スマホで開くページ）
+  - `app.js`：画面の切り替え（`#/` 一覧、`#/new` 新規登録、`#/edit/{id}` 変更）
+  - `list.js` / `entry.js` / `edit.js`：一覧・登録・変更の各画面
+  - `sender.js` / `outbox.js`：送信待ちの保存と自動再送
+  - `sw.js` / `manifest.webmanifest`：ホーム画面に追加して、電波がなくても開けるようにする設定（画面を更新したら `sw.js` の `VERSION` を上げる）
 - `src/worker.js`：中継役。画面からの依頼を受けて Notion とやり取りする
 - `src/notion.js`：Notion との変換・通信
 - `src/duplicates.js`：重複チェック（同じ現場・同じ搬入口・前後15分、「中止」は除外）
