@@ -2,11 +2,108 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0B4A9E">
 <title>搬入管理</title>
+<link rel="stylesheet" href="app.css">
+<script src="app.js" type="module"></script>
 </head>
 <body>
-<p>搬入管理アプリ（画面は段階3で作成します）</p>
+<header class="bar">
+  <h1>新規登録</h1>
+  <button type="button" class="btn-outline" id="copy-open">前回をコピー</button>
+</header>
+
+<div id="outbox" class="outbox" hidden>
+  <p id="outbox-text"></p>
+  <button type="button" class="btn-outline" id="outbox-retry">今すぐ再送</button>
+</div>
+
+<form id="entry" class="form" novalidate>
+  <div class="field">
+    <span class="lbl">現場名<span class="req">必須</span></span>
+    <div class="chips" id="site-chips" data-name="site"></div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">搬入日時<span class="req">必須</span></span>
+    <input class="inp" type="date" id="date" required aria-label="搬入日">
+    <div class="stepper">
+      <button type="button" class="step" data-step="-15" aria-label="15分前へ">−15</button>
+      <input class="time" type="time" id="time" step="900" required aria-label="開始時刻">
+      <button type="button" class="step" data-step="15" aria-label="15分後へ">＋15</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">搬入口・経路</span>
+    <div class="chips" id="gate-chips" data-name="gate"></div>
+  </div>
+
+  <div class="field">
+    <label class="lbl" for="vendor">業者名</label>
+    <input class="inp" id="vendor" autocomplete="off">
+  </div>
+  <div class="field">
+    <label class="lbl" for="item">搬入品目</label>
+    <input class="inp" id="item" autocomplete="off">
+  </div>
+  <div class="field">
+    <label class="lbl" for="title">件名<span class="req">必須</span></label>
+    <input class="inp" id="title" autocomplete="off" required>
+    <span class="hint">業者名と品目から自動で入ります。書き足しもできます</span>
+  </div>
+
+  <div class="two">
+    <div class="field">
+      <label class="lbl" for="vehicle">車両</label>
+      <input class="inp" id="vehicle" autocomplete="off">
+    </div>
+    <div class="field">
+      <label class="lbl" for="phone">連絡先</label>
+      <input class="inp" id="phone" type="tel" inputmode="tel" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">立会担当</span>
+    <div class="chips" id="attendee-chips"></div>
+  </div>
+
+  <div class="field">
+    <span class="lbl">ステータス</span>
+    <div class="chips" id="status-chips" data-name="status"></div>
+  </div>
+
+  <div class="field">
+    <label class="lbl" for="memo">備考</label>
+    <textarea class="inp" id="memo" rows="3"></textarea>
+  </div>
+
+  <p id="form-error" class="error" role="alert" hidden></p>
+</form>
+
+<footer class="foot">
+  <button type="submit" form="entry" class="btn-primary" id="submit">登録する</button>
+</footer>
+
+<dialog id="dup-dialog" class="sheet">
+  <h2>近い時間に搬入があります</h2>
+  <ul id="dup-list" class="dup-list"></ul>
+  <div class="two">
+    <button type="button" class="btn-outline-warn" id="dup-change">時間を変える</button>
+    <button type="button" class="btn-warn" id="dup-force">このまま登録</button>
+  </div>
+</dialog>
+
+<dialog id="copy-dialog" class="sheet">
+  <h2>コピーする搬入を選ぶ</h2>
+  <p id="copy-status" class="hint"></p>
+  <ul id="copy-list" class="copy-list"></ul>
+  <button type="button" class="btn-outline" id="copy-close">閉じる</button>
+</dialog>
+
+<div id="toast" class="toast" role="status" hidden></div>
 </body>
 </html>

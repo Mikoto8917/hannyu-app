@@ -4,7 +4,7 @@
 
 ## 構成
 
-- `public/`：画面（スマホで開くページ）。段階3で作成
+- `public/`：画面（スマホで開くページ）。`app.js` が登録画面、`outbox.js` が送信待ちの保存と再送
 - `src/worker.js`：中継役。画面からの依頼を受けて Notion とやり取りする
 - `src/notion.js`：Notion との変換・通信
 - `src/duplicates.js`：重複チェック（同じ現場・同じ搬入口・前後15分、「中止」は除外）
