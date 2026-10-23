@@ -5,95 +5,165 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0B4A9E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="搬入管理">
 <title>搬入管理</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="app.css">
 <script src="app.js" type="module"></script>
 </head>
 <body>
-<header class="bar">
-  <h1>新規登録</h1>
-  <button type="button" class="btn-outline" id="copy-open">前回をコピー</button>
-</header>
 
 <div id="outbox" class="outbox" hidden>
   <p id="outbox-text"></p>
   <button type="button" class="btn-outline" id="outbox-retry">今すぐ再送</button>
 </div>
 
-<form id="entry" class="form" novalidate>
-  <div class="field">
-    <span class="lbl">現場名<span class="req">必須</span></span>
-    <div class="chips" id="site-chips" data-name="site"></div>
-  </div>
-
-  <div class="field">
-    <span class="lbl">搬入日時<span class="req">必須</span></span>
-    <input class="inp" type="date" id="date" required aria-label="搬入日">
-    <div class="stepper">
-      <button type="button" class="step" data-step="-15" aria-label="15分前へ">−15</button>
-      <input class="time" type="time" id="time" step="900" required aria-label="開始時刻">
-      <button type="button" class="step" data-step="15" aria-label="15分後へ">＋15</button>
+<!-- 一覧 -->
+<section id="view-list" class="view" hidden>
+  <header class="bar bar-col">
+    <div class="bar-row">
+      <h1>搬入予定</h1>
+      <span id="list-when" class="hint"></span>
     </div>
-  </div>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-range="today" aria-selected="true">今日</button>
+      <button type="button" role="tab" data-range="tomorrow" aria-selected="false">明日</button>
+      <button type="button" role="tab" data-range="week" aria-selected="false">今週</button>
+    </div>
+  </header>
+  <p id="list-offline" class="notice" hidden></p>
+  <div id="list-body" class="list"></div>
+  <footer class="foot">
+    <a href="#/new" class="btn-primary">＋ 新規登録</a>
+  </footer>
+</section>
 
-  <div class="field">
-    <span class="lbl">搬入口・経路</span>
-    <div class="chips" id="gate-chips" data-name="gate"></div>
-  </div>
+<!-- 新規登録 -->
+<section id="view-new" class="view" hidden>
+  <header class="bar">
+    <a href="#/" class="back">← 一覧</a>
+    <h1>新規登録</h1>
+    <button type="button" class="btn-outline" id="copy-open">前回をコピー</button>
+  </header>
 
-  <div class="field">
-    <label class="lbl" for="vendor">業者名</label>
-    <input class="inp" id="vendor" autocomplete="off">
-  </div>
-  <div class="field">
-    <label class="lbl" for="item">搬入品目</label>
-    <input class="inp" id="item" autocomplete="off">
-  </div>
-  <div class="field">
-    <label class="lbl" for="title">件名<span class="req">必須</span></label>
-    <input class="inp" id="title" autocomplete="off" required>
-    <span class="hint">業者名と品目から自動で入ります。書き足しもできます</span>
-  </div>
-
-  <div class="two">
+  <form id="entry" class="form" novalidate>
     <div class="field">
-      <label class="lbl" for="vehicle">車両</label>
-      <input class="inp" id="vehicle" autocomplete="off">
+      <span class="lbl">現場名<span class="req">必須</span></span>
+      <div class="chips" id="site-chips"></div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">搬入日時<span class="req">必須</span></span>
+      <input class="inp" type="date" id="date" required aria-label="搬入日">
+      <div class="stepper">
+        <button type="button" class="step" data-step="-15" data-target="time" aria-label="15分前へ">−15</button>
+        <input class="time" type="time" id="time" step="900" required aria-label="開始時刻">
+        <button type="button" class="step" data-step="15" data-target="time" aria-label="15分後へ">＋15</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">搬入口・経路</span>
+      <div class="chips" id="gate-chips"></div>
+    </div>
+
+    <div class="field">
+      <label class="lbl" for="vendor">業者名</label>
+      <input class="inp" id="vendor" autocomplete="off">
     </div>
     <div class="field">
-      <label class="lbl" for="phone">連絡先</label>
-      <input class="inp" id="phone" type="tel" inputmode="tel" autocomplete="off">
+      <label class="lbl" for="item">搬入品目</label>
+      <input class="inp" id="item" autocomplete="off">
     </div>
+    <div class="field">
+      <label class="lbl" for="title">件名<span class="req">必須</span></label>
+      <input class="inp" id="title" autocomplete="off" required>
+      <span class="hint">業者名と品目から自動で入ります。書き足しもできます</span>
+    </div>
+
+    <div class="two">
+      <div class="field">
+        <label class="lbl" for="vehicle">車両</label>
+        <input class="inp" id="vehicle" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="lbl" for="phone">連絡先</label>
+        <input class="inp" id="phone" type="tel" inputmode="tel" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">立会担当</span>
+      <div class="chips" id="attendee-chips"></div>
+    </div>
+
+    <div class="field">
+      <span class="lbl">ステータス</span>
+      <div class="chips" id="status-chips"></div>
+    </div>
+
+    <div class="field">
+      <label class="lbl" for="memo">備考</label>
+      <textarea class="inp" id="memo" rows="3"></textarea>
+    </div>
+
+    <p id="form-error" class="error" role="alert" hidden></p>
+  </form>
+
+  <footer class="foot">
+    <button type="submit" form="entry" class="btn-primary" id="submit">登録する</button>
+  </footer>
+</section>
+
+<!-- 変更 -->
+<section id="view-edit" class="view" hidden>
+  <header class="bar">
+    <a href="#/" class="back">← 一覧</a>
+    <h1>搬入の変更</h1>
+    <span></span>
+  </header>
+  <div class="form">
+    <section class="summary">
+      <span id="edit-place" class="hint"></span>
+      <strong id="edit-title"></strong>
+      <span id="edit-detail" class="hint"></span>
+      <a id="edit-call" class="btn-outline call" hidden>発信</a>
+      <a id="edit-notion" class="link" target="_blank" rel="noopener" hidden>Notionで見る</a>
+    </section>
+
+    <section class="field">
+      <h2 class="lbl">ステータス</h2>
+      <div id="edit-status" class="status-grid"></div>
+      <span class="hint">削除はできません。取りやめは「中止」にします</span>
+    </section>
+
+    <section class="field">
+      <h2 class="lbl">時間の変更</h2>
+      <input class="inp" type="date" id="edit-date" aria-label="搬入日">
+      <div class="stepper">
+        <button type="button" class="step" data-step="-15" data-target="edit-time" aria-label="15分前へ">−15</button>
+        <input class="time" type="time" id="edit-time" step="900" aria-label="開始時刻">
+        <button type="button" class="step" data-step="15" data-target="edit-time" aria-label="15分後へ">＋15</button>
+      </div>
+      <span id="edit-hint" class="hint" hidden>時間を変えたので、ステータスを「変更」にしました（戻せます）</span>
+    </section>
+
+    <p id="edit-error" class="error" role="alert" hidden></p>
   </div>
-
-  <div class="field">
-    <span class="lbl">立会担当</span>
-    <div class="chips" id="attendee-chips"></div>
-  </div>
-
-  <div class="field">
-    <span class="lbl">ステータス</span>
-    <div class="chips" id="status-chips" data-name="status"></div>
-  </div>
-
-  <div class="field">
-    <label class="lbl" for="memo">備考</label>
-    <textarea class="inp" id="memo" rows="3"></textarea>
-  </div>
-
-  <p id="form-error" class="error" role="alert" hidden></p>
-</form>
-
-<footer class="foot">
-  <button type="submit" form="entry" class="btn-primary" id="submit">登録する</button>
-</footer>
+  <footer class="foot">
+    <button type="button" class="btn-primary" id="edit-save">変更を保存</button>
+  </footer>
+</section>
 
 <dialog id="dup-dialog" class="sheet">
   <h2>近い時間に搬入があります</h2>
   <ul id="dup-list" class="dup-list"></ul>
   <div class="two">
     <button type="button" class="btn-outline-warn" id="dup-change">時間を変える</button>
-    <button type="button" class="btn-warn" id="dup-force">このまま登録</button>
+    <button type="button" class="btn-warn" id="dup-force">このまま保存</button>
   </div>
 </dialog>
 

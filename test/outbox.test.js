@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createOutbox, sendDelivery } from '../public/outbox.js';
+import { createOutbox, sendDelivery, sendEntry } from '../public/outbox.js';
 
 const memoryStorage = () => {
   const m = new Map();
@@ -20,7 +20,7 @@ test('送れたものは消え、重複は確認待ちで残る', async () => {
   const box = createOutbox(memoryStorage());
   box.put(entry('ok'));
   box.put(entry('dup'));
-  await box.flush(async (p) => (p.clientId === 'ok' ? { kind: 'ok' } : { kind: 'duplicate', duplicates: [{ id: 'x' }] }));
+  await box.flush(async (e) => (e.payload.clientId === 'ok' ? { kind: 'ok' } : { kind: 'duplicate', duplicates: [{ id: 'x' }] }));
   assert.deepEqual(box.list().map((e) => [e.payload.clientId, e.state]), [['dup', 'conflict']]);
 });
 
@@ -58,4 +58,22 @@ test('応答コードごとに結果を分ける', async () => {
   assert.equal((await sendDelivery({}, reply(400, { error: 'x' }))).kind, 'invalid');
   assert.equal((await sendDelivery({}, reply(503, { retry: true }))).kind, 'retry');
   assert.equal((await sendDelivery({}, reply(429, {}))).kind, 'retry');
+});
+
+test('変更はPATCHで送り、見つからなければ再送しない', async () => {
+  const seen = [];
+  const fake = async (url, init) => {
+    seen.push([url, init.method, JSON.parse(init.body)]);
+    return new Response('{}', { status: 404 });
+  };
+  const r = await sendEntry({ kind: 'update', payload: { clientId: 'u', id: 'p1', changes: { status: '完了' } } }, fake);
+  assert.equal(r.kind, 'invalid');
+  assert.deepEqual(seen[0].slice(0, 2), ['/api/deliveries/p1', 'PATCH']);
+  assert.equal(seen[0][2].status, '完了');
+});
+
+test('種類のない古い記録は新規登録として扱う', () => {
+  const box = createOutbox(memoryStorage());
+  box.put(entry('a'));
+  assert.equal(box.list()[0].kind, 'create');
 });
