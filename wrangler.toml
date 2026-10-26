@@ -19,7 +19,7 @@ name = "RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 60, period = 60 }
 
-# 再送時の二重登録防止用の記録場所（KV）。公開の段階で作成し、id を入れてからコメントを外す。
-# [[kv_namespaces]]
-# binding = "SUBMISSIONS"
-# id = ""
+# 再送時の二重登録防止用の記録場所（KV「hannyu-submissions」）
+[[kv_namespaces]]
+binding = "SUBMISSIONS"
+id = "f496c457277b4aa58b6109d046983fe4"
