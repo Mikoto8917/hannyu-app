@@ -2,6 +2,8 @@
 # Cloudflare の画面の「Settings → Variables and Secrets」で Secret として登録する。
 # 公開アドレスの一部になる名前。推測されにくいよう、ランダムな文字を付けている
 name = "hannyu-k7q2m9x4"
+# workers.dev のアドレス（https://hannyu-k7q2m9x4.<サブドメイン>.workers.dev）で公開する
+workers_dev = true
 main = "src/worker.js"
 compatibility_date = "2026-10-01"
 
